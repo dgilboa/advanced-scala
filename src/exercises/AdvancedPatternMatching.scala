@@ -9,14 +9,15 @@ import exercises.AdvancedPatternMatching.{Digit, Even}
 object AdvancedPatternMatching extends App {
 
   object Even {
-    def unapply(x: Int): Option[String] =
-      if (x % 2 == 0) Some("I am an even number") else None
+    /** we cant define more than one unapply */
+//    def unapply(x: Int): Option[String] =
+//      if (x % 2 == 0) Some("I am an even number") else None
     def unapply(x: Int): Boolean = x % 2 == 0
   }
 
   object Digit {
-    def unapply(x: Int): Option[String] =
-      if (x < 10 && x >= 0) Some("I am a digit") else None
+//    def unapply(x: Int): Option[String] =
+//      if (x < 10 && x >= 0) Some("I am a digit") else None
     def unapply(x: Int): Boolean = x < 10 && x >= 0
   }
 
