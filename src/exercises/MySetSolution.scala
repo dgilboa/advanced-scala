@@ -41,7 +41,8 @@ class MyOwnEmptySet[A] extends MyOwnSet[A] {
   override def intersection(anotherSet: MyOwnSet[A]): MyOwnSet[A] = this
   override def diff(anotherSet: MyOwnSet[A]): MyOwnSet[A] = this
 
-  override def unary_! : MyOwnSet[A] = !this
+  /** Cause for the empty set - the negative to it is all true */
+  override def unary_! : MyOwnSet[A] = new MyOwnPropertyBasedSet[A](_ => true)
 }
 
 class MyOwnNonEmptySet[A](val value: A, val next: MyOwnSet[A]) extends MyOwnSet[A] {
@@ -93,6 +94,46 @@ class MyOwnNonEmptySet[A](val value: A, val next: MyOwnSet[A]) extends MyOwnSet[
   }
 
   override def unary_! : MyOwnSet[A] = ???
+}
+
+class MyOwnPropertyBasedSet[A](property: A => Boolean) extends MyOwnSet[A] {
+
+  override def contains(elem: A): Boolean = property(elem)
+
+  override def +(elem: A): MyOwnSet[A] =
+    new MyOwnPropertyBasedSet[A](x => property(x) || x == elem)
+
+  override def ++(anotherSet: MyOwnSet[A]): MyOwnSet[A] =
+    new MyOwnPropertyBasedSet[A](x => property(x) || anotherSet(x))
+
+  // goes for all A..
+  // if predicate(x) than f(x) but where do I get x:A
+  override def map[B](f: A => B): MyOwnSet[B] = politelyFail
+  override def flatMap[B](f: A => MyOwnSet[B]): MyOwnSet[B] = politelyFail
+
+  // should hold first this predicate and than the other predicate
+  override def filter(predicate: A => Boolean): MyOwnSet[A] =
+    new MyOwnPropertyBasedSet[A](x => property(x) && predicate(x))
+
+  // should go over all A
+  override def foreach(f: A => Unit): Unit = politelyFail
+
+  override def -(elem: A): MyOwnSet[A] =
+    new MyOwnPropertyBasedSet[A](x => property(x) && x != elem)
+    // actually also: filter(x => x != elem)
+
+  override def intersection(anotherSet: MyOwnSet[A]): MyOwnSet[A] =
+    new MyOwnPropertyBasedSet[A](x => property(x) && anotherSet(x))
+    // actually also: filter(anotherSet)
+
+  override def diff(anotherSet: MyOwnSet[A]): MyOwnSet[A] = {
+    new MyOwnPropertyBasedSet[A](x => property(x) && !anotherSet(x))
+    // actually also: filter(!anotherSet)
+  }
+
+  override def unary_! : MyOwnSet[A] = new MyOwnPropertyBasedSet[A](x => !property(x))
+
+  def politelyFail = throw new IllegalArgumentException("Not Supported")
 }
 
 object MyOwnSet {
