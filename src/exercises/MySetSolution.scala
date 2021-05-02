@@ -13,13 +13,18 @@ trait MyOwnSet[A] extends (A => Boolean) {
 
   def contains(elem: A): Boolean
   def +(elem: A): MyOwnSet[A]
-  def ++(anotherSet: MyOwnSet[A]): MyOwnSet[A]
+  def ++(anotherSet: MyOwnSet[A]): MyOwnSet[A] // union
   
   def map[B](f: A => B): MyOwnSet[B]
   def flatMap[B](f: A => MyOwnSet[B]): MyOwnSet[B]
   def filter(predicate: A => Boolean): MyOwnSet[A]
   def foreach(f: A => Unit): Unit
-  
+
+  def -(elem: A): MyOwnSet[A]
+  def intersection(anotherSet: MyOwnSet[A]): MyOwnSet[A] // &
+  def diff(anotherSet: MyOwnSet[A]): MyOwnSet[A] // --
+
+  def unary_! : MyOwnSet[A] // to be used as !mysetinstance --> that's actually just a syntactic suger.
 }
 
 class MyOwnEmptySet[A] extends MyOwnSet[A] {
@@ -32,6 +37,11 @@ class MyOwnEmptySet[A] extends MyOwnSet[A] {
   override def filter(predicate: A => Boolean): MyOwnSet[A] = this
   override def foreach(f: A => Unit): Unit = ()
 
+  override def -(elem: A): MyOwnSet[A] = this
+  override def intersection(anotherSet: MyOwnSet[A]): MyOwnSet[A] = this
+  override def diff(anotherSet: MyOwnSet[A]): MyOwnSet[A] = this
+
+  override def unary_! : MyOwnSet[A] = !this
 }
 
 class MyOwnNonEmptySet[A](val value: A, val next: MyOwnSet[A]) extends MyOwnSet[A] {
@@ -66,6 +76,23 @@ class MyOwnNonEmptySet[A](val value: A, val next: MyOwnSet[A]) extends MyOwnSet[
     f(value)
     next.foreach(f)
   }
+
+  override def -(elem: A): MyOwnSet[A] =
+    if (value == elem) next
+    else next - elem + value
+
+  override def intersection(anotherSet: MyOwnSet[A]): MyOwnSet[A] = {
+    filter (e => anotherSet.contains(e))
+    // filter(e => anotherSet(e)) equals
+    // filter(anotherSet) // intersection = filtering !!
+  }
+
+  override def diff(anotherSet: MyOwnSet[A]): MyOwnSet[A] = {
+    filter (e => !anotherSet.contains(e))
+    // filter(!anotherSet)
+  }
+
+  override def unary_! : MyOwnSet[A] = ???
 }
 
 object MyOwnSet {
@@ -85,5 +112,7 @@ object MySetSolutionPlayground extends App {
   println("Is 10 in my set: " +mySet(10))
   println("Is 5 in my set: " +mySet(5))
   mySet foreach println
+
+  println(mySet - 5 contains(5))
 
 }
