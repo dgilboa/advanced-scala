@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Lightricks. All rights reserved.
+ * Copyright (c) 2021 Who. All rights reserved.
  */
 package exercises
 
