@@ -3,10 +3,10 @@
  */
 package exercises
 
-import exercises.AdvancedPatternMatching.{Digit, Even}
+//import exercises.AdvancedPatternMatching.{Digit, Even}
 
 /** Solution for the exercises in the the lecture in @see [[lectures.part1as.AdvancedPatternMatching]] */
-object AdvancedPatternMatching extends App {
+object MyAdvancedPatternMatching extends App {
 
   object Even {
     /** we cant define more than one unapply */
