@@ -22,7 +22,7 @@ object MagnetPattern extends App {
     def receive[T : Serializer](message: T): Int
     def receive[T : Serializer](message: T, statusCode: Int): Int
     def receive(future: Future[P2PRequest]): Int
-    //    def receive(future: Future[P2PResponse]): Int
+//        def receive(future: Future[P2PResponse]): Int
     // lots of overloads
   }
 
